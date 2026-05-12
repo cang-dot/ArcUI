@@ -1,0 +1,43 @@
+{
+  "id": "arcui-tts",
+  "name": "语音合成",
+  "name_en": "TTS",
+  "version": "1.0.0",
+  "author": "ArcUI",
+  "description": "将 AI 回复转为语音播放",
+  "description_en": "Convert AI responses to speech",
+  "hooks": ["message.action", "message.render"],
+  "pythonCapabilities": ["tts_speak", "tts_fetch_voices"],
+  "configSchema": [
+    {
+      "key": "apiEndpoint",
+      "label": "TTS API 地址",
+      "label_en": "TTS API Endpoint",
+      "type": "text",
+      "placeholder": "https://api.openai.com/v1/audio/speech",
+      "required": false
+    },
+    {
+      "key": "voice",
+      "label": "语音",
+      "label_en": "Voice",
+      "type": "select",
+      "options": [
+        {"value": "alloy", "label": "Alloy"},
+        {"value": "echo", "label": "Echo"},
+        {"value": "fable", "label": "Fable"},
+        {"value": "onyx", "label": "Onyx"},
+        {"value": "nova", "label": "Nova"},
+        {"value": "shimmer", "label": "Shimmer"}
+      ],
+      "default": "alloy"
+    },
+    {
+      "key": "autoPlay",
+      "label": "自动播放",
+      "label_en": "Auto Play",
+      "type": "toggle",
+      "default": false
+    }
+  ]
+}

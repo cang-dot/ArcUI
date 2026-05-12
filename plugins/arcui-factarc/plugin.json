@@ -1,0 +1,30 @@
+{
+  "id": "arcui-factarc",
+  "name": "Fact-ARC 集成",
+  "name_en": "Fact-ARC Integration",
+  "version": "1.0.0",
+  "author": "ArcUI",
+  "description": "检测 Fact-ARC 后端并展示验证轨迹和来源引用",
+  "description_en": "Detect Fact-ARC backend and display verification trails and sources",
+  "hooks": ["message.afterReceive", "message.render", "api.provider"],
+  "pythonCapabilities": ["factarc_identity", "factarc_verify"],
+  "enabled": false,
+  "configSchema": [
+    {
+      "key": "factarcBackendUrl",
+      "label": "Fact-ARC 后端地址",
+      "label_en": "Fact-ARC Backend URL",
+      "type": "text",
+      "placeholder": "http://localhost:8000",
+      "required": false
+    },
+    {
+      "key": "factarcApiKey",
+      "label": "Fact-ARC API Key",
+      "label_en": "Fact-ARC API Key",
+      "type": "password",
+      "placeholder": "sk-...",
+      "required": false
+    }
+  ]
+}

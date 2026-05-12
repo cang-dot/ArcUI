@@ -1,0 +1,87 @@
+/* ArcUI - plugins.css */
+/* Plugin management panel */
+
+.plugin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.plugin-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+}
+
+.plugin-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.plugin-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.plugin-version {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-left: 6px;
+}
+
+.plugin-author {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.plugin-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  line-height: 1.5;
+}
+
+.plugin-meta {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+
+.plugin-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.plugin-config-section {
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--bg-overlay);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.plugin-empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+/* Install plugin form */
+.install-plugin-form {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.install-plugin-form .input {
+  flex: 1;
+}

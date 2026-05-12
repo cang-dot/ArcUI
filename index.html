@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ArcUI — AI Chat</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/chat.css">
+  <link rel="stylesheet" href="css/settings.css">
+  <link rel="stylesheet" href="css/plugins.css">
+
+  <!-- marked.js CDN for Markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+  <!-- ==================== Top Bar ==================== -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <!-- Hamburger button (three horizontal bars SVG) -->
+      <button id="hamburger-btn" class="btn-icon" aria-label="Toggle sidebar">
+        <svg width="20" height="16" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="0" y="0" width="20" height="2" rx="1" fill="currentColor"/>
+          <rect x="0" y="7" width="20" height="2" rx="1" fill="currentColor"/>
+          <rect x="0" y="14" width="20" height="2" rx="1" fill="currentColor"/>
+        </svg>
+      </button>
+      <span class="topbar-title">ArcUI</span>
+    </div>
+
+    <div class="topbar-center">
+      <span class="topbar-subtitle" data-i18n="appSubtitle">AI 对话前端</span>
+    </div>
+
+    <div class="topbar-right">
+      <!-- Editable user name -->
+      <span id="user-name-display" class="user-name-display" title="Click to edit">User</span>
+      <span class="topbar-sep">|</span>
+      <!-- Editable assistant name -->
+      <span id="assistant-name-display" class="assistant-name-display" title="Click to edit">ArcUI</span>
+      <span class="topbar-sep">|</span>
+      <!-- Language toggle -->
+      <button id="lang-btn" class="btn-text" data-i18n-title="toggleLanguage" title="Switch Language">EN</button>
+      <!-- Theme toggle -->
+      <button id="theme-btn" class="btn-icon" data-i18n-title="toggleTheme" title="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <!-- ==================== Sidebar Overlay (mobile) ==================== -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- ==================== Main Layout ==================== -->
+  <div class="main-layout">
+
+  <!-- ==================== Sidebar ==================== -->
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <button id="new-chat-btn" class="btn btn-primary btn-block" data-i18n="newChat">+ 新对话</button>
+    </div>
+
+    <div class="sidebar-search">
+      <input type="text" id="sidebar-search" class="input" data-i18n-placeholder="searchChats" placeholder="搜索对话...">
+    </div>
+
+    <div id="sidebar-list" class="sidebar-chat-list">
+      <!-- Dynamically populated -->
+    </div>
+
+    <div id="sidebar-bottom" class="sidebar-bottom">
+      <!-- Rendered by sidebar.js -->
+    </div>
+  </aside>
+
+  <!-- ==================== Main Chat Area ==================== -->
+  <main class="main-area">
+    <div id="chat-messages" class="chat-messages">
+      <!-- Welcome message (shown when no chat) -->
+      <div id="welcome-message" class="welcome-message">
+        <div class="welcome-title" data-i18n="welcomeTitle">欢迎使用 ArcUI</div>
+        <div class="welcome-subtitle" data-i18n="welcomeSubtitle">通用的 AI 对话前端。配置 LLM API 即可开始。</div>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div id="input-area" class="input-area">
+      <!-- Multimodal toolbar (hidden by default, shown when model supports vision) -->
+      <div id="multimodal-toolbar" class="multimodal-toolbar" style="display: none;">
+        <div id="attachment-previews" class="multimodal-preview">
+          <!-- Attachment previews rendered here -->
+        </div>
+        <div class="multimodal-actions">
+          <button id="upload-btn" class="btn btn-sm btn-ghost" data-i18n="uploadImage" title="上传图片">📎</button>
+          <input type="file" id="multimodal-file-input" accept="image/*" multiple style="display: none;">
+        </div>
+      </div>
+
+      <!-- Chat input row -->
+      <div class="input-row">
+        <textarea id="chat-input" class="chat-input" rows="1" data-i18n-placeholder="inputPlaceholder" placeholder="输入消息... (Enter 发送, Shift+Enter 换行)"></textarea>
+        <button id="send-btn" class="btn btn-primary btn-send" data-i18n-title="send" title="发送" disabled>↑</button>
+        <button id="stop-btn" class="btn btn-danger btn-stop" data-i18n-title="stop" title="停止" style="display: none;">■</button>
+      </div>
+
+      <!-- Model selector row -->
+      <div class="input-options">
+        <div class="option-group">
+          <button id="web-search-btn" class="btn btn-sm btn-secondary" data-i18n="webSearchOff" title="联网搜索：关" onclick="ArcUI.toggleWebSearch()">🌐 联网搜索：关</button>
+        </div>
+        <div class="option-group" id="model-selector-container">
+          <!-- Rendered by model-selector.js -->
+        </div>
+        <div class="option-group option-hint" data-i18n="newChatHint">
+          <span class="text-tertiary">Ctrl+N 新对话</span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  </div><!-- /main-layout -->
+
+  <!-- ==================== Settings Panel ==================== -->
+  <div id="settings-panel" class="settings-panel">
+    <div class="settings-overlay"></div>
+    <div class="settings-dialog">
+      <div class="settings-header">
+        <h2 data-i18n="settings">设置</h2>
+        <button id="settings-close-btn" class="btn-icon" data-i18n-title="close" title="关闭">✕</button>
+      </div>
+
+      <div class="settings-body">
+        <!-- API Configuration -->
+        <div class="card">
+          <div class="card-header" data-i18n="apiConfig">API 配置</div>
+          <div class="card-subtitle" data-i18n="apiConfigDesc">配置 LLM API 地址和密钥。支持任何 OpenAI 兼容 API。</div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="baseUrl">Base URL</label>
+            <input type="text" id="setting-base-url" class="input" placeholder="https://api.openai.com/v1">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="apiKey">API Key</label>
+            <input type="password" id="setting-api-key" class="input" placeholder="sk-...">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="bochaKey">Bocha API Key (联网搜索)</label>
+            <input type="password" id="setting-bocha-key" class="input" placeholder="sk-...">
+            <div class="form-hint" data-i18n="bochaKeyHint">Bocha API 密钥，用于联网搜索功能。留空则不启用。</div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="model">模型</label>
+            <select id="setting-model" class="select" data-i18n-title="selectModel">
+              <option value="">{{selectModel}}</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button id="settings-save-btn" class="btn btn-primary" data-i18n="save">保存</button>
+            <button id="test-connection-btn" class="btn btn-secondary" data-i18n="testConnection">测试连接</button>
+            <span id="test-connection-status" class="test-status"></span>
+            <span id="backend-status" class="backend-status"></span>
+          </div>
+        </div>
+
+        <!-- Correction Engine -->
+        <div class="card" style="border-color: var(--border-subtle);">
+          <div class="card-header" style="display: flex; align-items: center; gap: 8px;">
+            <span data-i18n="correctionEngine">纠错引擎</span> ※
+          </div>
+          <div class="card-subtitle" data-i18n="correctionEngineDesc">发送后 LLM 自我审查并自动迭代修正回答中的错误。结果不满意时建议开启。</div>
+
+          <div class="correction-warning">
+            <p data-i18n="correctionWarning">△ 开了纠错后，会说一些"官方话"；未联网时，联网纠错功能可能不能正常工作。</p>
+          </div>
+
+          <div class="form-group" style="display: flex; align-items: center; gap: 12px; margin: 0;">
+            <label for="setting-correction-enabled" data-i18n="correctionEnabled" style="font-size: 13px; color: var(--text-primary); cursor: pointer; user-select: none;">启用纠错</label>
+            <label class="toggle-label" style="margin: 0;">
+              <input type="checkbox" id="setting-correction-enabled" class="toggle-input" onchange="document.getElementById('correction-details').style.display = this.checked ? 'flex' : 'none'">
+              <span class="toggle-switch"></span>
+            </label>
+          </div>
+
+          <div id="correction-details" style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="correction-settings-grid">
+              <div class="form-group">
+                <label class="form-label" for="setting-correction-rounds" data-i18n="correctionRoundsLabel">最大纠错轮次</label>
+                <input type="number" id="setting-correction-rounds" class="input" min="1" max="5" value="2" style="width: 100%;">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="setting-correction-threshold" data-i18n="correctionThresholdLabel">评分阈值 (30-99)</label>
+                <input type="number" id="setting-correction-threshold" class="input" min="30" max="99" value="70" style="width: 100%;">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="setting-web-search-enabled" style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 12px; color: var(--text-secondary);">
+                <span data-i18n="webSearchEnabled">联网搜索纠错（需Bocha Key）</span>
+                <input type="checkbox" id="setting-web-search-enabled" class="toggle-input">
+                <span class="toggle-switch"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Prompt -->
+        <div class="card">
+          <div class="card-header" data-i18n="systemPrompt">系统提示词</div>
+          <div class="card-subtitle" data-i18n="systemPromptDesc">自定义发送给模型的系统提示词。留空使用默认。</div>
+
+          <textarea id="system-prompt-editor" class="system-prompt-editor" rows="6" data-i18n-placeholder="systemPromptPlaceholder" placeholder="你是一个有帮助的助手..."></textarea>
+          <div class="form-hint" data-i18n="systemPromptVars">可用变量：{{model}} {{date}} {{user_name}}</div>
+
+          <div class="form-actions">
+            <button id="save-prompt-btn" class="btn btn-primary" data-i18n="savePrompt">保存</button>
+            <button id="reset-prompt-btn" class="btn btn-secondary" data-i18n="resetDefault">恢复默认</button>
+          </div>
+        </div>
+
+        <!-- TTS Settings -->
+        <div class="card">
+          <div class="card-header" data-i18n="ttsSettings">TTS 语音设置</div>
+          <div class="card-subtitle" data-i18n="ttsSettingsDesc">配置文字转语音。不填则使用浏览器内置引擎。</div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="ttsEndpoint">TTS API 地址</label>
+            <input type="text" id="tts-endpoint" class="input" placeholder="https://api.openai.com/v1/audio/speech">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="ttsVoice">语音</label>
+            <select id="tts-voice" class="select">
+              <option value="alloy">Alloy</option>
+              <option value="echo">Echo</option>
+              <option value="fable">Fable</option>
+              <option value="onyx">Onyx</option>
+              <option value="nova">Nova</option>
+              <option value="shimmer">Shimmer</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="tts-auto-play" class="toggle-input">
+              <span class="toggle-switch"></span>
+              <span data-i18n="ttsAutoPlay">自动播放</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Plugins -->
+        <div class="card">
+          <div class="card-header" data-i18n="plugins">插件管理</div>
+          <div class="card-subtitle" data-i18n="pluginsDesc">管理已安装的插件。</div>
+          <div id="plugin-list" class="plugin-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Theme & Language -->
+        <div class="card">
+          <div class="card-header" data-i18n="appearance">外观</div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="theme">主题</label>
+            <div class="theme-toggle-row">
+              <button id="settings-theme-dark" class="btn btn-secondary btn-sm" data-i18n="dark">暗色</button>
+              <button id="settings-theme-light" class="btn btn-secondary btn-sm" data-i18n="light">浅色</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" data-i18n="language">语言</label>
+            <div class="theme-toggle-row">
+              <button id="settings-lang-zh" class="btn btn-secondary btn-sm">中文</button>
+              <button id="settings-lang-en" class="btn btn-secondary btn-sm">English</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ad Card -->
+        <div class="card ad-card" style="border-color: var(--border-subtle); text-align: center; padding: 20px 24px;">
+          <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 10px;">
+            <span data-i18n="adText1">PS：作者也写了一个 AI 引擎，可以有效抑制 AI 胡说，</span><br>
+            <span data-i18n="adText2">感兴趣的话来看看，求求了 🙏</span>
+          </div>
+          <a href="https://github.com/ZhouYvChongShan/Fact-ARC"
+             target="_blank" rel="noopener"
+             style="font-size: 11px; color: var(--text-tertiary); text-decoration: underline; text-underline-offset: 3px;">
+             github.com/ZhouYvChongShan/Fact-ARC
+          </a>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="card card-danger">
+          <div class="card-header" data-i18n="dangerZone">危险区域</div>
+          <div class="card-subtitle" data-i18n="dangerZoneDesc">以下操作不可撤销。</div>
+          <button id="clear-config-btn" class="btn btn-danger" data-i18n="clearAll">清除所有数据和配置</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Username Edit Modal ==================== -->
+  <div id="username-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <span data-i18n="editNames">编辑名称</span>
+        <button class="btn-icon" onclick="ArcUI.sidebar.hideUsernameModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" data-i18n="user">用户名称</label>
+          <input type="text" id="username-input" class="input" placeholder="User">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="assistant">助手名称</label>
+          <input type="text" id="assistantname-input" class="input" placeholder="ArcUI">
+          <label class="toggle-label" style="margin-top: 8px;">
+            <input type="checkbox" id="ai-name-follow-model" class="toggle-input">
+            <span class="toggle-switch"></span>
+            <span data-i18n="aiNameFollowModel">AI 名字跟随模型名字</span>
+          </label>
+          <div class="form-hint" data-i18n="aiNameFollowModelDesc" style="margin-top: 4px;">开启后 AI 名字将自动跟随当前使用的模型名称</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="ArcUI.sidebar.hideUsernameModal()" data-i18n="cancel">取消</button>
+        <button class="btn btn-primary" onclick="ArcUI.sidebar.saveUsernames()" data-i18n="save">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Toast Container ==================== -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- ==================== JavaScript ==================== -->
+  <!-- Load order matters: init.js MUST be first -->
+  <script src="js/init.js"></script>
+  <script src="js/markdown.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/identity.js"></script>
+  <script src="js/stream.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/correction.js"></script>
+  <script src="js/chat.js"></script>
+  <script src="js/multimodal.js"></script>
+  <script src="js/system-prompt.js"></script>
+  <script src="js/model-selector.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/tts.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
