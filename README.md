@@ -6,7 +6,7 @@
 
 > A standalone, plugin-extensible AI conversation frontend. Connect any OpenAI-format API, and it just works.
 
-ArcUI automatically detects [Fact-ARC](https://github.com/ZhouYvChongShan/Fact-ARC) backends to display real-time verification trails and fact sources — turning AI chat from blind trust into verifiable confidence.
+ArcUI automatically detects [Fact-ARC](https://github.com/cang-dot/Fact-ARC) backends to display real-time verification trails and fact sources — turning AI chat from blind trust into verifiable confidence.
 
 ---
 
@@ -150,7 +150,7 @@ ArcUI/
 
 ## Fact-ARC Integration
 
-ArcUI is the official frontend companion for [Fact-ARC](https://github.com/ZhouYvChongShan/Fact-ARC) — a fact-based auto-regressive correction system that fights AI hallucinations.
+ArcUI is the official frontend companion for [Fact-ARC](https://github.com/cang-dot/Fact-ARC) — a fact-based auto-regressive correction system that fights AI hallucinations.
 
 ### How it works
 

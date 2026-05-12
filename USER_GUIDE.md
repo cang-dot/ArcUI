@@ -239,7 +239,7 @@ The browser engine automatically detects and speaks in the appropriate language 
 
 ## Verification Trails (Fact-ARC)
 
-When ArcUI detects a [Fact-ARC](https://github.com/ZhouYvChongShan/Fact-ARC) backend:
+When ArcUI detects a [Fact-ARC](https://github.com/cang-dot/Fact-ARC) backend:
 
 1. A token is obtained from `/api/identity`.
 2. All requests carry `X-FactARC-Token` header.
@@ -303,5 +303,5 @@ Open Settings → fill in Base URL and API Key → Save.
 
 ## Support
 
-- **Fact-ARC project**: [github.com/ZhouYvChongShan/Fact-ARC](https://github.com/ZhouYvChongShan/Fact-ARC)
+- **Fact-ARC project**: [github.com/cang-dot/Fact-ARC](https://github.com/cang-dot/Fact-ARC)
 - **ArcUI** is part of the Fact-ARC ecosystem

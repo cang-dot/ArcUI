@@ -1,6 +1,6 @@
 # ArcUI — 通用 AI 对话前端
 
-ArcUI 是一个独立的、可扩展插件的 AI 对话前端。接入任何 OpenAI 格式的 API 即可使用，自动识别 [Fact-ARC](https://github.com/ZhouYvChongShan/Fact-ARC) 后端并展示验证轨迹与事实来源。
+ArcUI 是一个独立的、可扩展插件的 AI 对话前端。接入任何 OpenAI 格式的 API 即可使用，自动识别 [Fact-ARC](https://github.com/cang-dot/Fact-ARC) 后端并展示验证轨迹与事实来源。
 
 ---
 
