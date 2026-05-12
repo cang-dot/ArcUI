@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/logo.png" alt="ArcUI" width="120">
+  <img src="images/screenshot.png" alt="ArcUI Screenshot" width="800">
 </p>
 
 # ArcUI — Universal AI Chat Frontend
